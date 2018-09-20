@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 
 namespace ThaiNationalIDCard
@@ -178,16 +179,63 @@ namespace ThaiNationalIDCard
 
         public DateTime Birthday 
         {
+            //            get
+            //            {
+            //                return new DateTime(
+            //                Convert.ToInt32(_personal.Substring(200, 4)) - 543,
+            //                Convert.ToInt32(_personal.Substring(204, 2)),
+            //                Convert.ToInt32(_personal.Substring(206, 2))
+            //                );
+            //            }
             get
             {
-                return new DateTime(
-                Convert.ToInt32(_personal.Substring(200, 4)) - 543,
-                Convert.ToInt32(_personal.Substring(204, 2)),
-                Convert.ToInt32(_personal.Substring(206, 2))
-                );
+                var year = _personal.Substring(200, 4);
+                var month = _personal.Substring(204, 2);
+                var day = _personal.Substring(206, 2);
+
+                int yearInt;
+                var monthInt = 1;
+                var dayInt = 1;
+
+                // Get Year
+                if (IsNumberic(year))
+                {
+                    yearInt = Convert.ToInt32(year) - 543;
+                }
+                else
+                {
+                    yearInt = Convert.ToInt32(DateTime.Now.ToString("yyyy", new CultureInfo("th-TH")));
+                }
+
+                // Get Month
+                if (IsNumberic(month))
+                {
+                    monthInt = Convert.ToInt32(month);
+                }
+
+                // Get Day
+                if (IsNumberic(day))
+                {
+                    dayInt = Convert.ToInt32(day);
+                }
+
+                return new DateTime(yearInt, monthInt, dayInt);
             }
         }
-        
+        private bool IsNumberic(string value)
+        {
+            try
+            {
+                var isNumberic = int.TryParse(value, out _);
+                return isNumberic;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(">> ThaiNationalIdCard: " + e.StackTrace);
+                return false;
+            }
+        }
+
         public string BirthdayYearString
         {
             get
